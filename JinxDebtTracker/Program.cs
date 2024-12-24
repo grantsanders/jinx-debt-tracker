@@ -1,6 +1,7 @@
 using Ignis.Components;
 using Ignis.Components.Server;
 using jinx_debt_tracker.Interfaces;
+using jinx_debt_tracker.Models;
 using jinx_debt_tracker.Services;
 using Refit;
 
@@ -13,6 +14,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddIgnis();
 builder.Services.AddIgnisServer();
 builder.Services.AddScoped<GameService>();
+builder.Services.AddScoped<PlayerService>();
 builder.Services.AddRefitClient<IGameApi>()
     .ConfigureHttpClient(c =>c.BaseAddress = new Uri(connectionString));
 builder.Services.AddRefitClient<IPlayerApi>()
