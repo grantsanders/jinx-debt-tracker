@@ -1,0 +1,79 @@
+@using jinx_debt_tracker.Models
+@inherits IgnisComponentBase
+
+<TabGroup>
+    <TabList class="flex space-x-1 rounded-xl bg-red-900/20 p-1">
+        @foreach (var category in _resourcesByCategory.Keys)
+        {
+            <Tab AsComponent="typeof(Fragment)" Context="tab">
+                <button @ref="tab.Element"
+                        @attributes="tab.Attributes"
+                        class="@Css.Class("w-full rounded-lg py-2.5 text-sm font-medium leading-5 ring-white ring-opacity-60 ring-offset-2 ring-offset-red-400 focus:outline-none focus:ring-2", tab.IsSelected ? "text-red-700 bg-white shadow" : "text-red-100 hover:bg-white/[0.12] hover:text-white")"
+                        type="button">
+                    @category
+                </button>
+            </Tab>
+        }
+    </TabList>
+    <TabPanels class="mt-2">
+        @foreach (var (category, resources) in _resourcesByCategory)
+        {
+            <TabPanel @key="category"
+                      class="rounded-xl bg-white p-3 ring-white ring-opacity-60 ring-offset-2 ring-offset-red-400 focus:outline-none focus:ring-2"
+                      Context="_">
+                <ul>
+                    @foreach (var resource in resources)
+                    {
+                        <li class="relative rounded-md p-3 hover:bg-gray-100">
+                            <h3 class="text-sm font-medium leading-5">
+                                @resource.Title
+                            </h3>
+
+                            <p class="mt-1 text-xs font-normal leading-4 text-gray-500">
+                                @resource.Description
+                            </p>
+
+                            <a href="@resource.Url" target="_blank"
+                               class="absolute inset-0 rounded-md ring-red-400 focus:z-10 focus:outline-none focus:ring-2">
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </TabPanel>
+        }
+    </TabPanels>
+</TabGroup>
+
+@code
+{
+
+    [Parameter] public List<Game> Games { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        foreach (var game in Games)
+        {
+            _resourcesByCategory.Add(
+                $"{game.Player1_ID} 💪 VS 💪 {game.Player2_ID}", new Resource[]
+                {
+                    new()
+                    {
+                        Title = "test",
+                        Description = "test"
+                    }
+                }
+            );
+        }
+    }
+
+    private readonly IDictionary<string, Resource[]> _resourcesByCategory = new Dictionary<string, Resource[]>();
+
+    private class Resource
+    {
+        public string Title { get; set; } = null!;
+
+        public string Url { get; set; } = null!;
+
+        public string Description { get; set; } = null!;
+    }
+}

@@ -1,0 +1,10 @@
+﻿@inherits IgnisComponentBase
+
+<div class="h-screen bg-gradient-to-r from-gray-900 to-black">
+    @Body
+</div>
+
+@code
+{
+    [Parameter] public RenderFragment? Body { get; set; }
+}
