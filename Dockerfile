@@ -22,7 +22,7 @@ RUN dotnet restore JinxDebtTracker.csproj --disable-parallel
 RUN dotnet publish JinxDebtTracker.csproj -c release -o /app --no-restore
 # serve stage
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 #COPY --from=build /https/aspnetapp.pfx /https/aspnetapp.pfx
 WORKDIR /app
 COPY --from=build /app .
