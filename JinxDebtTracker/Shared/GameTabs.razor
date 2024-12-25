@@ -1,6 +1,5 @@
 @using jinx_debt_tracker.Models
 @using jinx_debt_tracker.Services
-@using Newtonsoft.Json
 @inherits IgnisAsyncComponentBase
 @inject PlayerService playerService
 @inject GameService gameService
@@ -93,9 +92,12 @@
 
     private string GetWinnerName(Game game)
     {
-        if (game.Advantage == 1) return playerService.PlayerList[game.Player1_ID].Name;
-        if (game.Advantage == 2) return playerService.PlayerList[game.Player2_ID].Name;
-        return "Tie";
+        switch (game.Advantage)
+        {
+            case 1: return playerService.PlayerList[game.Player1_ID].Name;
+            case 2: return playerService.PlayerList[game.Player2_ID].Name;
+            default: return "Tie";
+        }
     }
     
     private string GetPlayer1Name(Game game) => playerService.PlayerList[game.Player1_ID].Name;
@@ -103,9 +105,12 @@
 
     private int GetPositiveScore(Game game)
     {
-        if (game.Advantage == 1) return game.Player1_Score;
-        if (game.Advantage == 2) return game.Player2_Score;
-        return 0;
+        switch (game.Advantage)
+        {
+            case 1: return game.Player1_Score;
+            case 2: return game.Player2_Score;
+            default: return 0;
+        }
     }
 
     private async Task AdvancePlayer1(Game game)
@@ -127,13 +132,10 @@
     }
 
     private readonly IDictionary<string, Resource[]> _resourcesByCategory = new Dictionary<string, Resource[]>();
-
     private class Resource
     {
         public int Score { get; set; }
-
         public string Advantage { get; set; } = null!;
-
         public string LastJinx { get; set; } = null!;
         public Game Game { get; set; } = null!;
     }
