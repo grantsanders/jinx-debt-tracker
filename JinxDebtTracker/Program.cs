@@ -1,7 +1,6 @@
 using Ignis.Components;
 using Ignis.Components.Server;
 using jinx_debt_tracker.Interfaces;
-using jinx_debt_tracker.Models;
 using jinx_debt_tracker.Services;
 using Refit;
 
