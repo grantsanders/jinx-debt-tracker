@@ -9,6 +9,8 @@ public interface IGameApi
     Task<List<Game>> GetAllGames();
     [Get("/GetGame/{player1Id}/{player2Id}")]
     Task<Game> GetGameByPlayerIds(int player1Id, int player2Id);
-    Task<Game> UpdateGameByID();
+    [Patch("/UpdateGame")]
+    Task<Game> UpdateGameByID([Body] Game game);
+
     Task<Game> CreateGame();
 }
