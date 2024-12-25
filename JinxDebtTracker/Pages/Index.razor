@@ -4,7 +4,7 @@
 @inject GameService gameService
 @inherits IgnisAsyncComponentBase
 
-<PageTitle>Index</PageTitle>
+<PageTitle>JinxDebtTracker</PageTitle>
 
 <main class="flex h-screen justify-center items-center">
     <div>
@@ -12,25 +12,34 @@
             <h1 class="mb-2">The Debt Tracker</h1>
             <h3 class="mt-0">at long last, it is ready. check how much you owe below.</h3>
         </article>
-        <GameTabs Games=@Games/>
+
+        @if (Games.Count == 0)
+        {
+            <div class="flex justify-center items-center space-x-2">
+                <div style="width: 40px; height: 40px; border: 4px solid transparent; border-top-color: #470652; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                <span class="text-lg text-gray-500">Loading...</span>
+            </div>
+        }
+        else
+        {
+            <GameTabs Games=@Games/>
+        }
     </div>
 </main>
+
+<style>
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
 
 @code
 {
     public List<Game> Games = new();
-    protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
-    {
-        Games = await gameService.GetAllGames();
-        // Update();
-    }
-
-    private async Task GetGames()
-    {
-        Console.WriteLine("ding");
-        Games = await gameService.GetAllGames();
-        Update();
-        
-    }
-
+    protected override async Task OnInitializedAsync(CancellationToken cancellationToken) => Games = await gameService.GetAllGames();
 }
