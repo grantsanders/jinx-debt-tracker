@@ -4,33 +4,56 @@
 @inject GameService gameService
 @inherits IgnisAsyncComponentBase
 
-<PageTitle>Index</PageTitle>
+<PageTitle>JinxDebtTracker</PageTitle>
 
-<main class="flex h-screen justify-center items-center">
-    <div>
+<main class="flex flex-col h-screen justify-center items-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Article section -->
         <article class="prose prose-invert mb-8">
-            <h1 class="mb-2">The Debt Tracker</h1>
-            <h3 class="mt-0">at long last, it is ready. check how much you owe below.</h3>
+            <h1 class="mb-2 text-left text-2xl sm:text-3xl">The Debt Tracker</h1>
+            <h3 class="mt-0 text-left text-lg sm:text-xl">at long last, it is ready. check how much you owe below.</h3>
         </article>
-        <GameTabs Games=@Games/>
+
+        @if (Games.Count == 0)
+        {
+            <!-- Loading spinner while Games is being fetched -->
+            <div class="flex sm:justify-center items-center space-x-2">
+                <div class="w-10 h-10 border-4 border-solid border-transparent border-t-4 border-t-dark-purple rounded-full animate-spin"></div>
+                <span class="text-lg text-gray-500">Loading...</span>
+            </div>
+        }
+        else
+        {
+            <!-- Show GameTabs once Games are loaded -->
+            <GameTabs Games=@Games/>
+        }
     </div>
 </main>
+
+<style>
+    /* Tailwind class `animate-spin` should be defined, but you can customize the color here */
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .border-t-dark-purple {
+        border-top-color: #470652; /* Custom dark purple color */
+    }
+</style>
 
 @code
 {
     public List<Game> Games = new();
+    
+    // Fetch data asynchronously
     protected override async Task OnInitializedAsync(CancellationToken cancellationToken)
     {
-        Games = await gameService.GetAllGames();
-        // Update();
-    }
-
-    private async Task GetGames()
-    {
-        Console.WriteLine("ding");
-        Games = await gameService.GetAllGames();
         Update();
-        
+        Games = await gameService.GetAllGames();
     }
-
 }
