@@ -10,22 +10,8 @@
     <div>
         <article class="prose prose-invert mb-8">
             <h1 class="mb-2">The Debt Tracker</h1>
-            <h3 class="mt-0">at long last, check how much you owe below.</h3>
-            
-                <button type="button"
-                        @onclick="GetGames"
-                        class="rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-                    Open dialog
-                </button>                
-                @if (Games.Count > 0)
-                {
-                    foreach (var game in Games)
-                    {
-                        <p>@game.Player1_Score</p>
-                    }
-                }
+            <h3 class="mt-0">at long last, it is ready. check how much you owe below.</h3>
         </article>
-
         <GameTabs Games=@Games/>
     </div>
 </main>

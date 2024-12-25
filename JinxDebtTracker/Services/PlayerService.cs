@@ -6,13 +6,17 @@ namespace jinx_debt_tracker.Services;
 public class PlayerService
 {
     private readonly IPlayerApi _playerApi;
-    public Dictionary<int, Player> PlayerList { get; set; }
+    public Dictionary<int, Player> PlayerList { get; set; } = new();
     
     public PlayerService(IPlayerApi playerApi)
     {
         _playerApi = playerApi;
     }
 
-    public async Task<List<Player>> GetAllPlayers() => await _playerApi.GetAllPlayersAsync();
+    public async Task GetAllPlayers()
+    {
+        var players = await _playerApi.GetAllPlayersAsync();
+        PlayerList = players.ToDictionary(player => player.ID);
+    }
 
 }

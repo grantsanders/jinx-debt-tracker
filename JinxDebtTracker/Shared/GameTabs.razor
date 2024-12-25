@@ -1,5 +1,9 @@
 @using jinx_debt_tracker.Models
-@inherits IgnisComponentBase
+@using jinx_debt_tracker.Services
+@using Newtonsoft.Json
+@inherits IgnisAsyncComponentBase
+@inject PlayerService playerService
+@inject GameService gameService
 
 <TabGroup>
     <TabList class="flex space-x-1 rounded-xl bg-red-900/20 p-1">
@@ -21,24 +25,37 @@
             <TabPanel @key="category"
                       class="rounded-xl bg-white p-3 ring-white ring-opacity-60 ring-offset-2 ring-offset-red-400 focus:outline-none focus:ring-2"
                       Context="_">
-                <ul>
+                <ul class="flex flex-row justify-evenly">
                     @foreach (var resource in resources)
                     {
-                        <li class="relative rounded-md p-3 hover:bg-gray-100">
+                        <li class="relative flex items-center p-3">
                             <h3 class="text-sm font-medium leading-5">
-                                @resource.Title
+                                Score: @resource.Score
                             </h3>
-
-                            <p class="mt-1 text-xs font-normal leading-4 text-gray-500">
-                                @resource.Description
+                        </li>
+                        <li class="relative flex items-center p-3">
+                            <p class="text-sm font-medium leading-5">
+                                Lead: @resource.Advantage
                             </p>
-
-                            <a href="@resource.Url" target="_blank"
-                               class="absolute inset-0 rounded-md ring-red-400 focus:z-10 focus:outline-none focus:ring-2">
-                            </a>
+                        </li>
+                        <li class="flex items-center justify-evenly p-4">
+                            <div class="flex justify-between gap-4">
+                                <button type="button"
+                                        @onclick="() => AdvancePlayer1(resource.Game)"
+                                        class="flex justify-start rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-gray-950 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-opacity-75">
+                                    Point for @GetPlayer1Name(resource.Game)
+                                </button>
+                                <button type="button"
+                                        @onclick="() => AdvancePlayer2(resource.Game)"
+                                        class="flex justify-end rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-gray-950 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-opacity-75">
+                                    Point for @GetPlayer2Name(resource.Game)
+                                </button>
+                            </div>
                         </li>
                     }
                 </ul>
+
+
             </TabPanel>
         }
     </TabPanels>
@@ -49,31 +66,75 @@
 
     [Parameter] public List<Game> Games { get; set; } = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync(CancellationToken token)
     {
+        await playerService.GetAllPlayers();
+        RefreshResources();
+    }
+
+    private void RefreshResources()
+    {
+        _resourcesByCategory.Clear();
         foreach (var game in Games)
         {
             _resourcesByCategory.Add(
-                $"{game.Player1_ID} 💪 VS 💪 {game.Player2_ID}", new Resource[]
+                $"{(playerService.PlayerList[game.Player1_ID].Name)} VS {playerService.PlayerList[game.Player2_ID].Name}", new Resource[]
                 {
                     new()
                     {
-                        Title = "test",
-                        Description = "test"
+                        Score = GetPositiveScore(game),
+                        Advantage = GetWinnerName(game),
+                        Game = game
                     }
                 }
             );
         }
     }
 
+    private string GetWinnerName(Game game)
+    {
+        if (game.Advantage == 1) return playerService.PlayerList[game.Player1_ID].Name;
+        if (game.Advantage == 2) return playerService.PlayerList[game.Player2_ID].Name;
+        return "Tie";
+    }
+    
+    private string GetPlayer1Name(Game game) => playerService.PlayerList[game.Player1_ID].Name;
+    private string GetPlayer2Name(Game game) => playerService.PlayerList[game.Player2_ID].Name;
+
+    private int GetPositiveScore(Game game)
+    {
+        if (game.Advantage == 1) return game.Player1_Score;
+        if (game.Advantage == 2) return game.Player2_Score;
+        return 0;
+    }
+
+    private async Task AdvancePlayer1(Game game)
+    {
+        game.Player1_Score += 1;
+        game.Player2_Score -= 1;
+        await gameService.UpdateGame(game);
+        RefreshResources();
+        Update();
+    }
+
+    private async Task AdvancePlayer2(Game game)
+    {
+        game.Player2_Score += 1;
+        game.Player1_Score -= 1;
+        await gameService.UpdateGame(game);
+        RefreshResources();
+        Update();
+    }
+
     private readonly IDictionary<string, Resource[]> _resourcesByCategory = new Dictionary<string, Resource[]>();
 
     private class Resource
     {
-        public string Title { get; set; } = null!;
+        public int Score { get; set; }
 
-        public string Url { get; set; } = null!;
+        public string Advantage { get; set; } = null!;
 
-        public string Description { get; set; } = null!;
+        public string LastJinx { get; set; } = null!;
+        public Game Game { get; set; } = null!;
     }
 }

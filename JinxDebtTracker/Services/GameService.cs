@@ -19,4 +19,10 @@ public class GameService
         var values = await _gameApi.GetAllGames();
         return values;
     }
+
+    public async Task<Game> UpdateGame(Game game)
+    {
+        var newGame = await _gameApi.UpdateGameByID(game);
+        return newGame;
+    }
 }

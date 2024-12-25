@@ -13,6 +13,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddIgnis();
 builder.Services.AddIgnisServer();
 builder.Services.AddScoped<GameService>();
+builder.Services.AddScoped<PlayerService>();
 builder.Services.AddRefitClient<IGameApi>()
     .ConfigureHttpClient(c =>c.BaseAddress = new Uri(connectionString));
 builder.Services.AddRefitClient<IPlayerApi>()
