@@ -14,6 +14,7 @@ builder.Services.AddIgnis();
 builder.Services.AddIgnisServer();
 builder.Services.AddScoped<GameService>();
 builder.Services.AddScoped<PlayerService>();
+builder.Services.AddScoped<ThemeService>();
 builder.Services.AddRefitClient<IGameApi>()
     .ConfigureHttpClient(c =>c.BaseAddress = new Uri(connectionString));
 builder.Services.AddRefitClient<IPlayerApi>()
