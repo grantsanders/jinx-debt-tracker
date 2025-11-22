@@ -64,6 +64,7 @@
 {
 
     [Parameter] public List<Game> Games { get; set; } = new();
+    [Parameter] public EventCallback<Game> OnGameUpdated { get; set; }
 
     protected override async Task OnInitializedAsync(CancellationToken token)
     {
@@ -117,7 +118,21 @@
     {
         game.Player1_Score += 1;
         game.Player2_Score -= 1;
-        await gameService.UpdateGame(game);
+        var updatedGame = await gameService.UpdateGame(game);
+        
+        // Replace the game in the list with the updated version from the API
+        var index = Games.FindIndex(g => g.ID == game.ID);
+        if (index >= 0)
+        {
+            Games[index] = updatedGame;
+        }
+        
+        // Notify parent component of the update
+        if (OnGameUpdated.HasDelegate)
+        {
+            await OnGameUpdated.InvokeAsync(updatedGame);
+        }
+        
         RefreshResources();
         Update();
     }
@@ -126,7 +141,21 @@
     {
         game.Player2_Score += 1;
         game.Player1_Score -= 1;
-        await gameService.UpdateGame(game);
+        var updatedGame = await gameService.UpdateGame(game);
+        
+        // Replace the game in the list with the updated version from the API
+        var index = Games.FindIndex(g => g.ID == game.ID);
+        if (index >= 0)
+        {
+            Games[index] = updatedGame;
+        }
+        
+        // Notify parent component of the update
+        if (OnGameUpdated.HasDelegate)
+        {
+            await OnGameUpdated.InvokeAsync(updatedGame);
+        }
+        
         RefreshResources();
         Update();
     }
