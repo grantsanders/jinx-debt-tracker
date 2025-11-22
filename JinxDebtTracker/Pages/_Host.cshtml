@@ -8,13 +8,24 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>JinxDebtTracker</title>
+    <title>Jinx Score Tracker</title>
     <base href="~/"/>
     <script defer type="text/javascript" src="_content/Ignis.Components.Web/min.js"></script>
     <link href="css/app.min.css" rel="stylesheet"/>
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered"/>
+    <script src="js/theme.js"></script>
+    <script>
+        // Initialize theme before page load to prevent flash
+        (function() {
+            const theme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (theme === 'dark' || (!theme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 </head>
-<body class="bg-white">
+<body class="bg-gray-50 dark:bg-gray-950 transition-colors">
 <component type="typeof(App)" render-mode="ServerPrerendered"/>
 
 <div id="blazor-error-ui">
